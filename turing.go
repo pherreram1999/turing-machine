@@ -3,6 +3,7 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/dialog"
 	"time"
 )
 
@@ -50,8 +51,15 @@ func turingAnimate(cursor *CursorTape, tapeRef *[]*TapeCell) {
 	}
 
 	if cursor.Index > len(tape)-1 {
+		if cursor.State == "q3" {
+			dialog.ShowInformation("Terminado", "La cadena esta balanciada", Win)
+		}
 		return // caso base
 	}
+
+	duration, _ := slideDurationBind.Get()
+
+	timeDuration := time.Duration(duration) * (time.Millisecond * 100)
 
 	cell = tape[cursor.Index]
 	// movemos nuestro cursor a la celda
@@ -59,12 +67,12 @@ func turingAnimate(cursor *CursorTape, tapeRef *[]*TapeCell) {
 	moveCell := canvas.NewPositionAnimation(
 		fyne.NewPos(cursor.XAxis, cursorTop),
 		fyne.NewPos(newXAxis, cursorTop),
-		time.Second,
+		timeDuration,
 		cursor.Widget.Move,
 	)
 	cursor.XAxis = newXAxis
 	moveCell.Start()
-	time.Sleep(time.Second) // esperamos la animacion
-	tape = nil              // para que recoja el recolector
+	time.Sleep(timeDuration) // esperamos la animacion
+	tape = nil               // para que recoja el recolector
 	turingAnimate(cursor, tapeRef)
 }

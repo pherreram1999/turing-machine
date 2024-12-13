@@ -31,3 +31,9 @@ func (tc *TapeCell) SetSymbol(symbol string) {
 	tc.Symbol = symbol
 	_ = tc.SymbolBind.Set(symbol)
 }
+
+func (ct *CursorTape) Reset() {
+	ct.XAxis = 0
+	ct.Index = 0
+	ct.SetState("q0")
+}

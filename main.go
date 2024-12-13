@@ -12,9 +12,12 @@ import (
 	"image/color"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var Win fyne.Window
+
+var slideDurationBind binding.Float
 
 func main() {
 
@@ -24,6 +27,11 @@ func main() {
 	inputWord.SetPlaceHolder("Enter word")
 	inputString := binding.NewString()
 	inputWord.Bind(inputString)
+
+	slideDuration := widget.NewSlider(1, 20)
+	slideDurationBind = binding.NewFloat()
+	_ = slideDurationBind.Set(10)
+	slideDuration.Bind(slideDurationBind)
 
 	regex, err := regexp.Compile("01")
 
@@ -48,7 +56,7 @@ func main() {
 
 	var tape []*TapeCell
 
-	buildBtn := widget.NewButton("Build", func() {
+	animateBtn := widget.NewButton("Animate", func() {
 		word, _ := inputString.Get()
 		word = strings.TrimSpace(word)
 		if !regex.MatchString(word) {
@@ -57,6 +65,8 @@ func main() {
 		}
 
 		var xAxis float32 = 0
+		tape = []*TapeCell{} // vaciamos el arreglo
+		cursorTape.Reset()
 		for _, s := range word {
 			symbolBind := binding.NewString()
 			_ = symbolBind.Set(string(s))
@@ -74,24 +84,18 @@ func main() {
 			xAxis += boxSize
 
 		}
-	})
-
-	animateBtn := widget.NewButton("Animate", func() {
-		if len(tape) == 0 {
-			dialog.ShowError(errors.New("no elements in tape"), Win)
-			return
-		}
+		time.Sleep(time.Second)
 		turingAnimate(cursorTape, &tape)
 	})
 
 	Win = a.NewWindow("Turing Machine")
-	Win.Resize(fyne.NewSize(1200, 800))
+	Win.Resize(fyne.NewSize(1200, 180))
 
 	menuCont := container.NewVBox(
 		inputWordLbl,
 		inputWord,
-		buildBtn,
 		animateBtn,
+		slideDuration,
 	)
 
 	title := canvas.NewText("Turing Machine", color.Black)
