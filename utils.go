@@ -25,15 +25,16 @@ func NewCursor(stateBind binding.String) *fyne.Container {
 	return cursorCont
 }
 
-func NewBoxSymbol(symbol string) *fyne.Container {
+func NewBoxSymbol(symbolBind binding.String) *fyne.Container {
 	boxBackground := canvas.NewRectangle(color.RGBA{238, 242, 255, 255})
-	boxSymbol := canvas.NewText(symbol, color.Black)
+	boxSymbolLbl := widget.NewLabel("")
+	boxSymbolLbl.Bind(symbolBind)
 	boxCont := container.NewWithoutLayout()
 	boxCont.Add(boxBackground)
-	boxCont.Add(boxSymbol)
+	boxCont.Add(boxSymbolLbl)
 	boxBackground.Resize(fyne.NewSize(boxSize, boxSize))
 	boxCont.Resize(fyne.NewSize(boxSize, boxSize))
 	middle := float32(boxSize / 2)
-	boxSymbol.Move(fyne.NewPos(middle, middle-10))
+	boxSymbolLbl.Move(fyne.NewPos(middle-8, middle-20))
 	return boxCont
 }

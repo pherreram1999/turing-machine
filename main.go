@@ -36,17 +36,17 @@ func main() {
 
 	cursorWidget := NewCursor(cursorStateBind)
 
-	/*cursorTape := &CursorTape{
+	cursorTape := &CursorTape{
 		Widget:    cursorWidget,
 		StateBind: cursorStateBind,
 		State:     "q0",
-	}*/
+	}
 
 	tmContainer := container.NewWithoutLayout(cursorWidget)
 
-	cursorWidget.Move(fyne.NewPos(-10, 25))
+	cursorWidget.Move(fyne.NewPos(-cursorOffset, cursorTop))
 
-	var tape []*SymbolCell
+	var tape []*TapeCell
 
 	buildBtn := widget.NewButton("Build", func() {
 		word, _ := inputString.Get()
@@ -58,16 +58,28 @@ func main() {
 
 		var xAxis float32 = 0
 		for _, s := range word {
-			boxSymbol := NewBoxSymbol(string(s))
+			symbolBind := binding.NewString()
+			_ = symbolBind.Set(string(s))
+			boxSymbol := NewBoxSymbol(symbolBind)
 			boxSymbol.Move(fyne.NewPos(xAxis, tapeTop))
 			xAxis += boxSize
 			tmContainer.Add(boxSymbol)
 
-			tape = append(tape, &SymbolCell{
+			tape = append(tape, &TapeCell{
 				XAxis:        xAxis,
+				SymbolBind:   symbolBind,
 				BoxContainer: boxSymbol,
+				Symbol:       string(s),
 			})
 		}
+	})
+
+	animateBtn := widget.NewButton("Animate", func() {
+		if len(tape) == 0 {
+			dialog.ShowError(errors.New("no elements in tape"), Win)
+			return
+		}
+		turingAnimate(cursorTape, &tape)
 	})
 
 	Win = a.NewWindow("Turing Machine")
@@ -77,6 +89,7 @@ func main() {
 		inputWordLbl,
 		inputWord,
 		buildBtn,
+		animateBtn,
 	)
 
 	title := canvas.NewText("Turing Machine", color.Black)

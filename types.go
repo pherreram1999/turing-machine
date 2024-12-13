@@ -2,15 +2,15 @@ package main
 
 import (
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/data/binding"
 )
 
 type (
-	SymbolCell struct {
-		BoxContainer     *fyne.Container
-		SymbolTextCanvas *canvas.Text
-		XAxis            float32
+	TapeCell struct {
+		BoxContainer *fyne.Container
+		SymbolBind   binding.String
+		Symbol       string
+		XAxis        float32
 	}
 
 	CursorTape struct {
@@ -18,5 +18,16 @@ type (
 		XAxis     float32
 		StateBind binding.String
 		State     string
+		Index     int // lleva registro donde se ubica
 	}
 )
+
+func (c *CursorTape) SetState(state string) {
+	c.State = state
+	_ = c.StateBind.Set(state)
+}
+
+func (tc *TapeCell) SetSymbol(symbol string) {
+	tc.Symbol = symbol
+	_ = tc.SymbolBind.Set(symbol)
+}
