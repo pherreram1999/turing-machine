@@ -8,11 +8,6 @@ import (
 
 func turingAnimate(cursor *CursorTape, tapeRef *[]*TapeCell) {
 	tape := *tapeRef
-
-	if len(tape) == 0 {
-		return // caso base
-	}
-
 	cell := tape[cursor.Index]
 	// si estoy en q0 y recibo un cero, lo mando a q1 y muevo a la derecha, e imprimo X
 	if cursor.State == "q0" && cell.Symbol == "0" {
@@ -54,6 +49,11 @@ func turingAnimate(cursor *CursorTape, tapeRef *[]*TapeCell) {
 		cursor.Index++
 	}
 
+	if cursor.Index > len(tape)-1 {
+		return // caso base
+	}
+
+	cell = tape[cursor.Index]
 	// movemos nuestro cursor a la celda
 	newXAxis := cell.XAxis - cursorOffset
 	moveCell := canvas.NewPositionAnimation(

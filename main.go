@@ -62,7 +62,6 @@ func main() {
 			_ = symbolBind.Set(string(s))
 			boxSymbol := NewBoxSymbol(symbolBind)
 			boxSymbol.Move(fyne.NewPos(xAxis, tapeTop))
-			xAxis += boxSize
 			tmContainer.Add(boxSymbol)
 
 			tape = append(tape, &TapeCell{
@@ -71,6 +70,9 @@ func main() {
 				BoxContainer: boxSymbol,
 				Symbol:       string(s),
 			})
+
+			xAxis += boxSize
+
 		}
 	})
 
