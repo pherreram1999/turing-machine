@@ -62,9 +62,14 @@ func turingAnimate(cursor *CursorTape, tapeRef *[]*TapeCell, transitionFile *os.
 		cell.SetSymbol("Y")
 		cursor.Index++
 		direction = "R"
+	} else if cursor.State == "q3" && cell.Symbol == "1" {
+		// DETENEMOS la maquina dado este estado no esta contemplado
+		return
 	}
 
-	if cursor.Index > len(tape)-1 {
+	if cursor.Index+1 > len(tape) {
+		// si no hay elementos en la cinta y no encontramos en el estaod q3
+		// indica que hemos llegado al finla de la maquina
 		if cursor.State == "q3" {
 			dialog.ShowInformation("Terminado", "La cadena esta balanciada", Win)
 		}
