@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -65,6 +66,13 @@ func main() {
 		}
 
 		var xAxis float32 = 0
+		// antes de vaciar la cinta quitamos los nodos
+		for _, cell := range tape {
+			if cell.BoxContainer != nil {
+				cell.BoxContainer.Hide()
+				cell.BoxContainer = nil
+			}
+		}
 		tape = []*TapeCell{} // vaciamos el arreglo
 		cursorTape.Reset()
 		for _, s := range word {
@@ -85,7 +93,17 @@ func main() {
 
 		}
 		time.Sleep(time.Second)
-		turingAnimate(cursorTape, &tape)
+
+		// creamos un archivo donde se guardar las transiciones
+		transitionFile, err := os.Create("transitions.txt")
+
+		if err != nil {
+			return
+		}
+
+		defer transitionFile.Close()
+
+		turingAnimate(cursorTape, &tape, transitionFile)
 	})
 
 	Win = a.NewWindow("Turing Machine")

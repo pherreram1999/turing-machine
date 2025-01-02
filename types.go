@@ -35,5 +35,6 @@ func (tc *TapeCell) SetSymbol(symbol string) {
 func (ct *CursorTape) Reset() {
 	ct.XAxis = 0
 	ct.Index = 0
+	ct.Widget.Move(fyne.NewPos(-cursorOffset, cursorTop))
 	ct.SetState("q0")
 }
