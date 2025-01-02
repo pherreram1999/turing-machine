@@ -2,12 +2,14 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
 	"os"
@@ -19,6 +21,8 @@ import (
 var Win fyne.Window
 
 var slideDurationBind binding.Float
+
+const LimitAnimation = 10
 
 func main() {
 
@@ -33,6 +37,17 @@ func main() {
 	slideDurationBind = binding.NewFloat()
 	_ = slideDurationBind.Set(10)
 	slideDuration.Bind(slideDurationBind)
+
+	// bind counter
+	strLenBind := binding.NewString()
+	strLenLbl := widget.NewLabel("")
+	strLenLbl.Bind(strLenBind)
+	// counter info widget
+	strLenCont := container.New(
+		layout.NewHBoxLayout(),
+		canvas.NewText("Str Length", color.Black),
+		strLenLbl,
+	)
 
 	regex, err := regexp.Compile("01")
 
@@ -51,6 +66,12 @@ func main() {
 		State:     "q0",
 	}
 
+	inputWord.OnChanged = func(s string) {
+		cursorTape.StrLen = len(s)
+		strLenBind.Set(fmt.Sprintf("%d", cursorTape.StrLen))
+	}
+
+	// turing machine container
 	tmContainer := container.NewWithoutLayout(cursorWidget)
 
 	cursorWidget.Move(fyne.NewPos(-cursorOffset, cursorTop))
@@ -76,23 +97,28 @@ func main() {
 		tape = []*TapeCell{} // vaciamos el arreglo
 		cursorTape.Reset()
 		for _, s := range word {
-			symbolBind := binding.NewString()
-			_ = symbolBind.Set(string(s))
-			boxSymbol := NewBoxSymbol(symbolBind)
-			boxSymbol.Move(fyne.NewPos(xAxis, tapeTop))
-			tmContainer.Add(boxSymbol)
 
-			tape = append(tape, &TapeCell{
-				XAxis:        xAxis,
-				SymbolBind:   symbolBind,
-				BoxContainer: boxSymbol,
-				Symbol:       string(s),
-			})
+			cell := &TapeCell{
+				XAxis:  xAxis,
+				Symbol: string(s),
+			}
 
-			xAxis += boxSize
-
+			if cursorTape.StrLen <= LimitAnimation {
+				symbolBind := binding.NewString()
+				_ = symbolBind.Set(string(s))
+				boxSymbol := NewBoxSymbol(symbolBind)
+				boxSymbol.Move(fyne.NewPos(xAxis, tapeTop))
+				tmContainer.Add(boxSymbol)
+				xAxis += boxSize
+				cell.SymbolBind = symbolBind
+				cell.BoxContainer = boxSymbol
+			}
+			tape = append(tape, cell)
 		}
-		time.Sleep(time.Second)
+
+		if cursorTape.StrLen <= LimitAnimation {
+			time.Sleep(time.Second)
+		}
 
 		_ = os.Remove("transitions.txt")
 		// creamos un archivo donde se guardar las transiciones
@@ -105,6 +131,7 @@ func main() {
 		defer transitionFile.Close()
 
 		turingAnimate(cursorTape, &tape, transitionFile)
+		dialog.ShowInformation("Se ha terminado", "la maquina se detuvo", Win)
 	})
 
 	Win = a.NewWindow("Turing Machine")
@@ -115,6 +142,7 @@ func main() {
 		inputWord,
 		animateBtn,
 		slideDuration,
+		strLenCont,
 	)
 
 	title := canvas.NewText("Turing Machine", color.Black)

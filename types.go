@@ -18,18 +18,24 @@ type (
 		XAxis     float32
 		StateBind binding.String
 		State     string
-		Index     int // lleva registro donde se ubica
+		Index     int // lleva registro donde se ubica,
+		StrLen    int
 	}
 )
 
 func (c *CursorTape) SetState(state string) {
 	c.State = state
-	_ = c.StateBind.Set(state)
+	if c.StateBind != nil {
+		_ = c.StateBind.Set(state)
+	}
 }
 
 func (tc *TapeCell) SetSymbol(symbol string) {
 	tc.Symbol = symbol
-	_ = tc.SymbolBind.Set(symbol)
+	if tc.SymbolBind != nil {
+		_ = tc.SymbolBind.Set(symbol)
+	}
+
 }
 
 func (ct *CursorTape) Reset() {

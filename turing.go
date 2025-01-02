@@ -72,23 +72,25 @@ func turingAnimate(cursor *CursorTape, tapeRef *[]*TapeCell, transitionFile *os.
 	}
 
 	duration, _ := slideDurationBind.Get()
-
-	timeDuration := time.Duration(duration) * (time.Millisecond * 100)
-
 	cell = tape[cursor.Index]
-	// movemos nuestro cursor a la celda
-	newXAxis := cell.XAxis - cursorOffset
-	moveCell := canvas.NewPositionAnimation(
-		fyne.NewPos(cursor.XAxis, cursorTop),
-		fyne.NewPos(newXAxis, cursorTop),
-		timeDuration,
-		cursor.Widget.Move,
-	)
-	cursor.XAxis = newXAxis
-	moveCell.Start()
-	time.Sleep(timeDuration) // esperamos la animacion
-	tape = nil               // para que recoja el recolector
 
+	if cursor.StrLen <= 10 {
+		timeDuration := time.Duration(duration) * (time.Millisecond * 100)
+		// movemos nuestro cursor a la celda
+		newXAxis := cell.XAxis - cursorOffset
+		moveCell := canvas.NewPositionAnimation(
+			fyne.NewPos(cursor.XAxis, cursorTop),
+			fyne.NewPos(newXAxis, cursorTop),
+			timeDuration,
+			cursor.Widget.Move,
+		)
+		cursor.XAxis = newXAxis
+		moveCell.Start()
+		time.Sleep(timeDuration) // esperamos la animacion
+
+	}
+	// es una copia del apuntador
+	tape = nil // para que recoja el recolector
 	// transition
 	transition := fmt.Sprintf(
 		"&(%s,%s) = (%s,%s,%s)\n",
