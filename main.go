@@ -20,6 +20,7 @@ import (
 )
 
 var Win fyne.Window
+var App fyne.App
 
 var slideDurationBind binding.Float
 
@@ -29,7 +30,7 @@ const MaxRand = 20
 
 func main() {
 
-	a := app.NewWithID("turing-machine")
+	App = app.NewWithID("turing-machine")
 	inputWordLbl := widget.NewLabel("Word")
 	inputWord := widget.NewEntry()
 	inputWord.SetPlaceHolder("Enter word")
@@ -137,7 +138,7 @@ func main() {
 		dialog.ShowInformation("Se ha terminado", "la maquina se detuvo", Win)
 	})
 
-	Win = a.NewWindow("Turing Machine")
+	Win = App.NewWindow("Turing Machine")
 	Win.Resize(fyne.NewSize(1200, 180))
 
 	// semilla randmon
@@ -157,6 +158,8 @@ func main() {
 		_ = inputString.Set(randEntry)
 	})
 
+	showDiagramBtn := widget.NewButton("Show Diagram", OpenTuringDiagram)
+
 	menuCont := container.NewVBox(
 		inputWordLbl,
 		inputWord,
@@ -164,6 +167,7 @@ func main() {
 		slideDuration,
 		strLenCont,
 		btnRandom,
+		showDiagramBtn,
 	)
 
 	title := canvas.NewText("Turing Machine", color.Black)
