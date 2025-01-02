@@ -94,6 +94,7 @@ func main() {
 		}
 		time.Sleep(time.Second)
 
+		_ = os.Remove("transitions.txt")
 		// creamos un archivo donde se guardar las transiciones
 		transitionFile, err := os.Create("transitions.txt")
 
