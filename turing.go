@@ -62,8 +62,8 @@ func turingAnimate(cursor *CursorTape, tapeRef *[]*TapeCell, transitionFile *os.
 		cell.SetSymbol("Y")
 		cursor.Index++
 		direction = "R"
-	} else if cursor.State == "q3" && cell.Symbol == "1" {
-		// DETENEMOS la maquina dado este estado no esta contemplado
+	} else if cursor.State == "q3" && (cell.Symbol == "1" || cell.Symbol == "0" || cell.Symbol == "X") {
+		// DETENEMOS la maquina dado este estado no esta contemplado para la entra del simbolo
 		return
 	}
 

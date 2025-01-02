@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
+	"math/rand"
 	"os"
 	"regexp"
 	"strings"
@@ -23,6 +24,8 @@ var Win fyne.Window
 var slideDurationBind binding.Float
 
 const LimitAnimation = 10
+
+const MaxRand = 20
 
 func main() {
 
@@ -137,12 +140,30 @@ func main() {
 	Win = a.NewWindow("Turing Machine")
 	Win.Resize(fyne.NewSize(1200, 180))
 
+	// semilla randmon
+	src := rand.NewSource(time.Now().Unix())
+	r := rand.New(src)
+
+	btnRandom := widget.NewButton("Random", func() {
+		maxLength := r.Intn(MaxRand/2) * 2 // recordar que rand da n-1
+		randEntry := ""
+		for i := 0; i < maxLength; i++ {
+			if r.Intn(2) == 1 {
+				randEntry += "1"
+			} else {
+				randEntry += "0"
+			}
+		}
+		_ = inputString.Set(randEntry)
+	})
+
 	menuCont := container.NewVBox(
 		inputWordLbl,
 		inputWord,
 		animateBtn,
 		slideDuration,
 		strLenCont,
+		btnRandom,
 	)
 
 	title := canvas.NewText("Turing Machine", color.Black)
